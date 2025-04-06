@@ -377,6 +377,27 @@ The available instance methods are listed below. The specified config will be me
 ##### axios#patch(url[, data[, config]])
 ##### axios#getUri([config])
 
+
+
+**Request logging methods**
+
+These are instance methods that allow users to record their requests as a log which contains handful information for debugging and tracing:
+
+##### axios#enable_request_logging()
+##### axios#disable_request_logging()
+##### axios#get_request_log()
+##### axios#clear_request_log()
+
+`enable_request_logging` initiates a log array and starts logging the requests with a response `interceptor`
+
+`disable_request_logging` stops logging requests
+
+`get_request_log` returns the current log
+
+`clear_request_log` cleas the current log
+
+
+
 ## Request Config
 
 These are the available config options for making requests. Only the `url` is required. Requests will default to `GET` if `method` is not specified.

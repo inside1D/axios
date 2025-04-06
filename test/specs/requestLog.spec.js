@@ -447,7 +447,7 @@ describe("Axios Request Logging Functions", function () {
       });
 
       await axios.get("/one-entry");
-      checkExtraFieldsAreValid(axios.log);
+      checkExtraFieldsAreValid(axios.get_request_log());
 
       expect(reduceToBasicFields(axios.get_request_log())).toEqual([
         {
@@ -468,7 +468,7 @@ describe("Axios Request Logging Functions", function () {
       await axios.get("/multi-entry");
       await axios.post("/multi-entry");
       await axios.delete("/multi-entry");
-      checkExtraFieldsAreValid(axios.log);
+      checkExtraFieldsAreValid(axios.get_request_log());
 
       expect(reduceToBasicFields(axios.get_request_log())).toEqual([
         {
