@@ -1,5 +1,34 @@
 import Axios from "../../lib/core/Axios";
 
+/**
+ * Validates that the log entries' extra fields like timestamp are also valid'.
+ * This function currently checks that the `timestamp` field is defined and is a valid date.
+ * 
+ * @param {Array} log - The log entries to check. Each entry should be an object with specific fields.
+ * @throws {Error} Throws an error if any entry's extra fields are invalid.
+ */
+
+function checkExtraFieldsAreValid(log) {
+  log.forEach(entry => {
+    const timestamp = entry.timestamp;
+    expect(timestamp).toBeDefined();
+    expect(new Date(timestamp).toString()).not.toBe("Invalid Date");
+
+    // Can be explanded if extra fields are to be added to log entries
+  });
+}
+
+/**
+ * Reduces log entries to their basic fields (method, url, status).
+ * This function filters out any additional fields in the log entries and returns only the essential ones.
+ * 
+ * @param {Array} log - The log entries to reduce. Each entry is an object that may contain extra fields.
+ * @returns {Array} A new array of log entries, each containing only the `method`, `url`, and `status` fields.
+ */
+function reduceToBasicFields(log) {
+  return log.map(({ method, url, status }) => ({ method, url, status }));
+}
+
 describe("Axios Request Logging Functions", function () {
   let axios;
 
@@ -56,8 +85,9 @@ describe("Axios Request Logging Functions", function () {
       });
 
       await axios.get("/test");
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/test",
@@ -80,8 +110,9 @@ describe("Axios Request Logging Functions", function () {
       await axios.get("/test");
       await axios.put("/test");
       await axios.post("/anotherTest");
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/test",
@@ -112,8 +143,9 @@ describe("Axios Request Logging Functions", function () {
       } catch (err) {
         // Intentionally silenced for testing
       }
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/not-found",
@@ -144,8 +176,9 @@ describe("Axios Request Logging Functions", function () {
       } catch (err) {
         // Intentionally silenced for testing
       }
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/not-found",
@@ -198,8 +231,9 @@ describe("Axios Request Logging Functions", function () {
       } catch (err) {
         // Intentionally silenced for testing
       }
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/client-side-error",
@@ -273,8 +307,9 @@ describe("Axios Request Logging Functions", function () {
       } catch (err) {
         // Intentionally silenced for testing
       }
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/test",
@@ -294,8 +329,9 @@ describe("Axios Request Logging Functions", function () {
       });
 
       await axios.get("/should-not-be-logged");
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/test",
@@ -328,8 +364,9 @@ describe("Axios Request Logging Functions", function () {
       } catch (err) {
         // Intentionally silenced for testing
       }
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/test",
@@ -350,7 +387,7 @@ describe("Axios Request Logging Functions", function () {
 
       await axios.get("/should-not-be-logged");
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/test",
@@ -367,7 +404,9 @@ describe("Axios Request Logging Functions", function () {
       axios.enable_request_logging();
 
       await axios.post("/test");
-      expect(axios.log).toEqual([
+
+      checkExtraFieldsAreValid(axios.log);
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/test",
@@ -408,8 +447,9 @@ describe("Axios Request Logging Functions", function () {
       });
 
       await axios.get("/one-entry");
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.get_request_log()).toEqual([
+      expect(reduceToBasicFields(axios.get_request_log())).toEqual([
         {
           method: "GET",
           url: "/one-entry",
@@ -428,8 +468,9 @@ describe("Axios Request Logging Functions", function () {
       await axios.get("/multi-entry");
       await axios.post("/multi-entry");
       await axios.delete("/multi-entry");
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.get_request_log()).toEqual([
+      expect(reduceToBasicFields(axios.get_request_log())).toEqual([
         {
           method: "GET",
           url: "/multi-entry",
@@ -482,8 +523,9 @@ describe("Axios Request Logging Functions", function () {
 
       await axios.put("/should-disappear");
       await axios.get("/should-disappear");
+      checkExtraFieldsAreValid(axios.log);
       // Assure the log has been populated before clearing
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/should-disappear-two",
@@ -522,8 +564,9 @@ describe("Axios Request Logging Functions", function () {
 
       await axios.get("/to-clear");
       await axios.post("/to-clear");
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "GET",
           url: "/to-clear",
@@ -545,8 +588,9 @@ describe("Axios Request Logging Functions", function () {
       } catch (err) {
         // silenced intentionally for testing
       }
+      checkExtraFieldsAreValid(axios.log);
 
-      expect(axios.log).toEqual([
+      expect(reduceToBasicFields(axios.log)).toEqual([
         {
           method: "POST",
           url: "/to-stay-one",
